@@ -75,7 +75,7 @@ st.title(f"Evolución Resultados ensayos PAES: {asignatura_sel}")
 st.subheader(f"Usuario: {usuario_sel}")
 
 # Métricas Dinámicas
-col1, col2 = st.columns(2)
+col1, col2, col13 = st.columns(3)
 with col1:
     st.metric("Último Puntaje", f"{df['Puntajes'].iloc[-1]} pts")
 with col2:

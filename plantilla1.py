@@ -51,11 +51,11 @@ DATABASE = {
 }
 
 # --- 2. BARRA LATERAL (Doble Filtro) ---
-st.sidebar.header("🔐 Acceso Personal")
+st.sidebar.header("Acceso Personal")
 
 # Filtro 1: Usuario
 usuario_lista = list(DATABASE.keys())
-usuario_sel = st.sidebar.selectbox("¿Quién eres?", usuario_lista)
+usuario_sel = st.sidebar.selectbox("Seleccionar un usuario", usuario_lista)
 
 # Filtro 2: Asignatura (Se actualiza según el usuario elegido)
 asignaturas_disponibles = list(DATABASE[usuario_sel].keys())
@@ -71,8 +71,8 @@ data_final = DATABASE[usuario_sel][asignatura_sel]
 df = pd.DataFrame(data_final)
 
 # --- 4. INTERFAZ PRINCIPAL ---
-st.title(f"📈 Evolución PAES: {asignatura_sel}")
-st.subheader(f"Estudiante: {usuario_sel}")
+st.title(f"Evolución Resultados ensayos PAES: {asignatura_sel}")
+st.subheader(f"Usuario: {usuario_sel}")
 
 # Métricas Dinámicas
 col1, col2 = st.columns(2)
@@ -80,11 +80,12 @@ with col1:
     st.metric("Último Puntaje", f"{df['Puntajes'].iloc[-1]} pts")
 with col2:
     st.metric("Total Ensayos", len(df))
-
+with col3:
+    st.metric("Promedio de los puntajes", len(df))
 st.divider()
 
 # --- 5. GRÁFICOS DINÁMICOS ---
-tab1, tab2 = st.tabs(["📊 Gráfico de Progreso", "🎯 Análisis por Ejes"])
+tab1, tab2 = st.tabs(["Gráfico de Progreso", "Análisis por Ejes"])
 
 with tab1:
     fig_evolucion = px.line(df, x="Ensayos", y="Puntajes", markers=True, 

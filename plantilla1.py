@@ -2,92 +2,96 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# --- CONFIGURACIÓN DE LA PÁGINA ---
-st.set_page_config(page_title="Mi Progreso PAES", layout="wide", page_icon="📈")
+# --- CONFIGURACIÓN ---
+st.set_page_config(page_title="Portal PAES Global", layout="wide")
 
-# --- 1. BASE DE DATOS (Aquí los alumnos agregan a sus amigos y datos) ---
-# Instrucción para alumnos: Para agregar un amigo, copia un bloque entero y cambia los datos.
-# Asegúrate de que todas las listas dentro de un nombre tengan el mismo largo.
+# --- 1. BASE DE DATOS MULTI-ASIGNATURA ---
+# Estructura: Usuario -> Asignatura -> Datos
 DATABASE = {
-    "Joel": {
-        "Ensayos": ["Ensayo 1", "Ensayo 2", "Ensayo 3","Ensayo 4"],
-        "Puntajes": [650, 680, 710,890],
-        "Buenas": [40, 45, 50,65],
-        "Eje Numeros": [70, 75, 80, 90],       # % de acierto
-        "Eje Algebra": [50, 55, 65,20],       # % de acierto
-        "Eje Geometria": [40, 42, 48, 65],     # % de acierto
-        "Eje Probabilidad": [30, 40, 50, 32]   # % de acierto
+    "Nico_Profe": {
+        "M1 (Matemática)": {
+            "Ensayos": ["Marzo", "Abril"],
+            "Puntajes": [720, 750],
+            "Eje_Números": [80, 85],
+            "Eje_Álgebra": [60, 70]
+        },
+        "Lenguaje": {
+            "Ensayos": ["Marzo", "Abril"],
+            "Puntajes": [600, 640],
+            "Eje_Rastreo": [50, 60],
+            "Eje_Interpretación": [40, 55]
+        }
     },
-    "Eduardo Z.": {
-        "Ensayos": ["Ensayo 1", "Ensayo 2"],
-        "Puntajes": [580, 610],
-        "Buenas": [30, 35],
-        "Eje Numeros": [60, 65],
-        "Eje Algebra": [40, 45],
-        "Eje Geometria": [30, 35],
-        "Eje Probabilidad": [20, 30]
+    "Cata_Estudiante": {
+        "M1 (Matemática)": {
+            "Ensayos": ["Abril"],
+            "Puntajes": [810],
+            "Eje_Números": [90],
+            "Eje_Álgebra": [85]
+        },
+        "Ciencias": {
+            "Ensayos": ["Abril"],
+            "Puntajes": [550],
+            "Eje_Biología": [40],
+            "Eje_Física": [30]
+        }
     }
-    
 }
 
-# --- 2. BARRA LATERAL (Navegación) ---
-st.sidebar.header("Panel de Acceso")
-usuario = st.sidebar.selectbox("Selecciona tu perfil:", list(DATABASE.keys()))
+# --- 2. BARRA LATERAL (Doble Filtro) ---
+st.sidebar.header("🔐 Acceso Personal")
+
+# Filtro 1: Usuario
+usuario_lista = list(DATABASE.keys())
+usuario_sel = st.sidebar.selectbox("¿Quién eres?", usuario_lista)
+
+# Filtro 2: Asignatura (Se actualiza según el usuario elegido)
+asignaturas_disponibles = list(DATABASE[usuario_sel].keys())
+asignatura_sel = st.sidebar.selectbox("Selecciona la Prueba", asignaturas_disponibles)
 
 st.sidebar.divider()
-st.sidebar.markdown(f"**Usuario actual:** {usuario}")
-st.sidebar.info("Para actualizar tus datos, edita el código en GitHub y guarda los cambios.")
+st.sidebar.success(f"Perfil: {usuario_sel}")
+st.sidebar.info(f"Viendo: {asignatura_sel}")
 
-# --- 3. PROCESAMIENTO DE DATOS ---
-# Convertimos el diccionario del usuario seleccionado en una tabla (DataFrame)
-datos_dict = DATABASE[usuario]
-df = pd.DataFrame(datos_dict)
+# --- 3. PROCESAMIENTO ---
+# Extraemos solo la info del usuario y asignatura elegida
+data_final = DATABASE[usuario_sel][asignatura_sel]
+df = pd.DataFrame(data_final)
 
 # --- 4. INTERFAZ PRINCIPAL ---
-st.title(f"Preparación PAES: {usuario}")
-st.write("Visualiza tu evolución y detecta en qué ejes necesitas reforzar.")
+st.title(f"📈 Evolución PAES: {asignatura_sel}")
+st.subheader(f"Estudiante: {usuario_sel}")
 
-# Métricas destacadas
-col1, col2, col3 = st.columns(3)
-ultimo_puntaje = df["Puntajes"].iloc[-1]
-primer_puntaje = df["Puntajes"].iloc[0]
-mejor_puntaje = df["Puntajes"].max()
-
-col1.metric("Último Puntaje", f"{ultimo_puntaje} pts", delta=int(ultimo_puntaje - primer_puntaje))
-col2.metric("Mejor Puntaje", f"{mejor_puntaje} pts")
-col3.metric("Ensayos Realizados", len(df))
+# Métricas Dinámicas
+col1, col2 = st.columns(2)
+with col1:
+    st.metric("Último Puntaje", f"{df['Puntajes'].iloc[-1]} pts")
+with col2:
+    st.metric("Total Ensayos", len(df))
 
 st.divider()
 
-# --- 5. GRÁFICOS ---
-tab1, tab2, tab3 = st.tabs(["Evolución General", "Análisis por Ejes", "Resultados"])
+# --- 5. GRÁFICOS DINÁMICOS ---
+tab1, tab2 = st.tabs(["📊 Gráfico de Progreso", "🎯 Análisis por Ejes"])
 
 with tab1:
-    st.subheader("Progreso de Puntaje")
-    fig_progreso = px.line(df, x="Ensayos", y="Puntajes", markers=True, 
-                          text="Puntajes", title="Puntaje por Ensayo")
-    fig_progreso.update_traces(textposition="top center", line_color="#00CC96")
-    st.plotly_chart(fig_progreso, use_container_width=True)
+    fig_evolucion = px.line(df, x="Ensayos", y="Puntajes", markers=True, 
+                            title=f"Rendimiento en {asignatura_sel}",
+                            color_discrete_sequence=["#FF4B4B"])
+    st.plotly_chart(fig_evolucion, use_container_width=True)
 
 with tab2:
-    st.subheader("Rendimiento Detallado por Contenido")
-    # Seleccionamos las columnas que empiezan con "Eje_" para graficar
-    columnas_ejes = [col for col in df.columns if col.startswith("Eje_")]
+    # El programa busca automáticamente cualquier columna que empiece con "Eje_"
+    columnas_ejes = [c for c in df.columns if c.startswith("Eje_")]
     
-    fig_ejes = px.line(df, x="Ensayos", y=columnas_ejes, markers=True,
-                       title="Porcentaje de Logro por Eje Temático")
-    fig_ejes.update_yaxes(range=[0, 100]) # El porcentaje es de 0 a 100
-    st.plotly_chart(fig_ejes, use_container_width=True)
-    
-    st.info("Consejo: Los ejes con líneas más bajas son tu prioridad de estudio para esta semana.")
+    if columnas_ejes:
+        fig_ejes = px.bar(df, x="Ensayos", y=columnas_ejes, barmode="group",
+                          title="Comparativa de Ejes Temáticos")
+        fig_ejes.update_yaxes(range=[0, 100])
+        st.plotly_chart(fig_ejes, use_container_width=True)
+    else:
+        st.warning("No hay datos de ejes temáticos para esta asignatura.")
 
-with tab3:
-    st.subheader("Tus Datos")
-    st.dataframe(df, use_container_width=True)
-    
-    # Botón para descargar
-    csv = df.to_csv(index=False).encode('utf-8')
-    st.download_button("Descargar mi planilla (CSV)", data=csv, file_name=f"progreso_{usuario}.csv")
-
-# --- 6. PIE DE PÁGINA ---
-st.caption("Programa creado para fines educativos - Preparación PAES 2026")
+# --- 6. TABLA DE DATOS ---
+with st.expander("Ver detalles de la planilla"):
+    st.table(df)

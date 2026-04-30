@@ -2,72 +2,91 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# 1. CONFIGURACIÓN DE LA PÁGINA
-st.set_page_config(page_title="Mi Evolución PAES", layout="wide")
+# --- CONFIGURACIÓN DE LA PÁGINA ---
+st.set_page_config(page_title="Mi Progreso PAES", layout="wide", page_icon="📈")
 
-st.title("📈 Tracker de Ensayos PAES")
-st.markdown("""
-Esta aplicación te permite monitorear tu progreso. 
-**Instrucciones:** Edita la tabla de abajo con tus resultados y los gráficos se actualizarán solos.
-""")
-
-# 2. CONFIGURACIÓN ADAPTABLE (Lo que los alumnos pueden cambiar)
-# Aquí definimos los ejes temáticos. Si quieren cambiar a "Ciencias", solo editan esta lista.
-EJES_TEMATICOS = ["Números", "Álgebra y Funciones", "Geometría", "Probabilidad y Estadística"]
-
-# 3. DATOS INICIALES (Para que no aparezca vacío)
-if 'df_resultados' not in st.session_state:
-    data = {
-        "Ensayo": ["Ensayo 1", "Ensayo 2"],
-        "Fecha": ["2026-03-01", "2026-04-01"],
-        "Puntaje": [650, 720],
-        "Buenas": [40, 48],
-        "Malas": [20, 12],
-        "Números (%)": [70, 85],
-        "Álgebra (%)": [50, 60],
-        "Geometría (%)": [40, 55],
-        "Probabilidad (%)": [30, 45]
+# --- 1. BASE DE DATOS (Aquí los alumnos agregan a sus amigos y datos) ---
+# Instrucción para alumnos: Para agregar un amigo, copia un bloque entero y cambia los datos.
+# Asegúrate de que todas las listas dentro de un nombre tengan el mismo largo.
+DATABASE = {
+    "Tu_Nombre": {
+        "Ensayos": ["Ensayo 1", "Ensayo 2", "Ensayo 3"],
+        "Puntajes": [650, 680, 710],
+        "Buenas": [40, 45, 50],
+        "Eje_Numeros": [70, 75, 80],       # % de acierto
+        "Eje_Algebra": [50, 55, 65],       # % de acierto
+        "Eje_Geometria": [40, 42, 48],     # % de acierto
+        "Eje_Probabilidad": [30, 40, 50]   # % de acierto
+    },
+    "Amigo_1": {
+        "Ensayos": ["Ensayo 1", "Ensayo 2"],
+        "Puntajes": [580, 610],
+        "Buenas": [30, 35],
+        "Eje_Numeros": [60, 65],
+        "Eje_Algebra": [40, 45],
+        "Eje_Geometria": [30, 35],
+        "Eje_Probabilidad": [20, 30]
     }
-    st.session_state.df_resultados = pd.DataFrame(data)
+}
 
-# 4. EDITOR DE DATOS (La "Planilla")
-st.subheader("📝 Ingresa tus resultados")
-df_editado = st.data_editor(
-    st.session_state.df_resultados, 
-    num_rows="dynamic", 
-    use_container_width=True
-)
+# --- 2. BARRA LATERAL (Navegación) ---
+st.sidebar.header("🔐 Panel de Acceso")
+usuario = st.sidebar.selectbox("Selecciona tu perfil:", list(DATABASE.keys()))
 
-# Guardar cambios
-st.session_state.df_resultados = df_editado
+st.sidebar.divider()
+st.sidebar.markdown(f"**Usuario actual:** {usuario}")
+st.sidebar.info("Para actualizar tus datos, edita el código en GitHub y guarda los cambios.")
 
-# 5. VISUALIZACIÓN DE MÉTRICAS CLAVE
+# --- 3. PROCESAMIENTO DE DATOS ---
+# Convertimos el diccionario del usuario seleccionado en una tabla (DataFrame)
+datos_dict = DATABASE[usuario]
+df = pd.DataFrame(datos_dict)
+
+# --- 4. INTERFAZ PRINCIPAL ---
+st.title(f"🚀 Dashboard de Preparación PAES: {usuario}")
+st.write("Visualiza tu evolución y detecta en qué ejes necesitas reforzar.")
+
+# Métricas destacadas
 col1, col2, col3 = st.columns(3)
-with col1:
-    ultimo_puntaje = df_editado["Puntaje"].iloc[-1]
-    st.metric("Último Puntaje", f"{ultimo_puntaje} pts")
-with col2:
-    promedio_buenas = round(df_editado["Buenas"].mean(), 1)
-    st.metric("Promedio Buenas", promedio_buenas)
-with col3:
-    progreso = ultimo_puntaje - df_editado["Puntaje"].iloc[0]
-    st.metric("Progreso Total", f"{progreso} pts", delta=int(progreso))
+ultimo_puntaje = df["Puntajes"].iloc[-1]
+primer_puntaje = df["Puntajes"].iloc[0]
+mejor_puntaje = df["Puntajes"].max()
 
-# 6. GRÁFICOS DE EVOLUCIÓN
+col1.metric("Último Puntaje", f"{ultimo_puntaje} pts", delta=int(ultimo_puntaje - primer_puntaje))
+col2.metric("Mejor Puntaje", f"{mejor_puntaje} pts")
+col3.metric("Ensayos Realizados", len(df))
+
 st.divider()
-tab1, tab2 = st.tabs(["Evolución General", "Análisis por Ejes"])
+
+# --- 5. GRÁFICOS ---
+tab1, tab2, tab3 = st.tabs(["📉 Evolución General", "🎯 Análisis por Ejes", "📄 Ver Planilla"])
 
 with tab1:
-    st.subheader("Puntaje a través del tiempo")
-    fig_puntaje = px.line(df_editado, x="Ensayo", y="Puntaje", markers=True, 
-                          line_shape="linear", title="Evolución del Puntaje")
-    st.plotly_chart(fig_puntaje, use_container_width=True)
+    st.subheader("Progreso de Puntaje")
+    fig_progreso = px.line(df, x="Ensayos", y="Puntajes", markers=True, 
+                          text="Puntajes", title="Puntaje por Ensayo")
+    fig_progreso.update_traces(textposition="top center", line_color="#00CC96")
+    st.plotly_chart(fig_progreso, use_container_width=True)
 
 with tab2:
-    st.subheader("Porcentaje de acierto por Eje Temático")
-    # Filtramos las columnas que terminan en (%) para graficarlas
-    columnas_ejes = [c for c in df_editado.columns if "%" in c]
-    fig_ejes = px.line(df_editado, x="Ensayo", y=columnas_ejes, markers=True,
-                       title="Rendimiento por Contenido")
-    fig_ejes.update_yaxes(range=[0, 100])
+    st.subheader("Rendimiento Detallado por Contenido")
+    # Seleccionamos las columnas que empiezan con "Eje_" para graficar
+    columnas_ejes = [col for col in df.columns if col.startswith("Eje_")]
+    
+    fig_ejes = px.line(df, x="Ensayos", y=columnas_ejes, markers=True,
+                       title="Porcentaje de Logro por Eje Temático")
+    fig_ejes.update_yaxes(range=[0, 100]) # El porcentaje es de 0 a 100
     st.plotly_chart(fig_ejes, use_container_width=True)
+    
+    st.info("💡 Consejo: Los ejes con líneas más bajas son tu prioridad de estudio para esta semana.")
+
+with tab3:
+    st.subheader("Tus Datos Crudos")
+    st.dataframe(df, use_container_width=True)
+    
+    # Botón para descargar
+    csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button("Descargar mi planilla (CSV)", data=csv, file_name=f"progreso_{usuario}.csv")
+
+# --- 6. PIE DE PÁGINA ---
+st.caption("Programa creado para fines educativos - Preparación PAES 2026")

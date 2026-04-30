@@ -5,10 +5,10 @@ import plotly.express as px
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Portal PAES Global", layout="wide")
 
-# --- 1. BASE DE DATOS MULTI-ASIGNATURA ---
-# Estructura: Usuario -> Asignatura -> Datos
+# Datos del programa
+# Estudiante, Prueba, Info
 DATABASE = {
-    "Nico_Profe": {
+    "Joel": {
         "M1 (Matemática)": {
             "Ensayos": ["Marzo", "Abril"],
             "Puntajes": [720, 750],
@@ -22,7 +22,7 @@ DATABASE = {
             "Eje_Interpretación": [40, 55]
         }
     },
-    "Cata_Estudiante": {
+    "Kantar": {
         "M1 (Matemática)": {
             "Ensayos": ["Abril"],
             "Puntajes": [810],
@@ -34,6 +34,18 @@ DATABASE = {
             "Puntajes": [550],
             "Eje_Biología": [40],
             "Eje_Física": [30]
+        },
+        "Historia": {
+            "Ensayos": ["Febrero","Marzo","Abril",],
+            "Puntajes": [810,700,900],
+            "Eje_Números": [90,60,86],
+            "Eje_Álgebra": [85,70,83]
+        },
+        "Lenguaje": {
+            "Ensayos": ["Abril"],
+            "Puntajes": [810],
+            "Eje_Números": [90],
+            "Eje_Álgebra": [85]
         }
     }
 }

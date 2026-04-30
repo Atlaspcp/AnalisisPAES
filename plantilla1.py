@@ -30,7 +30,7 @@ DATABASE = {
 }
 
 # --- 2. BARRA LATERAL (Navegación) ---
-st.sidebar.header("🔐 Panel de Acceso")
+st.sidebar.header("Panel de Acceso")
 usuario = st.sidebar.selectbox("Selecciona tu perfil:", list(DATABASE.keys()))
 
 st.sidebar.divider()
@@ -43,7 +43,7 @@ datos_dict = DATABASE[usuario]
 df = pd.DataFrame(datos_dict)
 
 # --- 4. INTERFAZ PRINCIPAL ---
-st.title(f"🚀 Dashboard de Preparación PAES: {usuario}")
+st.title(f"Preparación PAES: {usuario}")
 st.write("Visualiza tu evolución y detecta en qué ejes necesitas reforzar.")
 
 # Métricas destacadas
@@ -59,7 +59,7 @@ col3.metric("Ensayos Realizados", len(df))
 st.divider()
 
 # --- 5. GRÁFICOS ---
-tab1, tab2, tab3 = st.tabs(["📉 Evolución General", "🎯 Análisis por Ejes", "📄 Ver Planilla"])
+tab1, tab2, tab3 = st.tabs(["Evolución General", "Análisis por Ejes", "Resultados"])
 
 with tab1:
     st.subheader("Progreso de Puntaje")
@@ -78,10 +78,10 @@ with tab2:
     fig_ejes.update_yaxes(range=[0, 100]) # El porcentaje es de 0 a 100
     st.plotly_chart(fig_ejes, use_container_width=True)
     
-    st.info("💡 Consejo: Los ejes con líneas más bajas son tu prioridad de estudio para esta semana.")
+    st.info("Consejo: Los ejes con líneas más bajas son tu prioridad de estudio para esta semana.")
 
 with tab3:
-    st.subheader("Tus Datos Crudos")
+    st.subheader("Tus Datos")
     st.dataframe(df, use_container_width=True)
     
     # Botón para descargar

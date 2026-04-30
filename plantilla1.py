@@ -13,20 +13,21 @@ DATABASE = {
         "Ensayos": ["Ensayo 1", "Ensayo 2", "Ensayo 3","Ensayo 4"],
         "Puntajes": [650, 680, 710,890],
         "Buenas": [40, 45, 50,65],
-        "Eje_Numeros": [70, 75, 80, 90],       # % de acierto
-        "Eje_Algebra": [50, 55, 65,20],       # % de acierto
-        "Eje_Geometria": [40, 42, 48, 65],     # % de acierto
-        "Eje_Probabilidad": [30, 40, 50, 32]   # % de acierto
+        "Eje Numeros": [70, 75, 80, 90],       # % de acierto
+        "Eje Algebra": [50, 55, 65,20],       # % de acierto
+        "Eje Geometria": [40, 42, 48, 65],     # % de acierto
+        "Eje Probabilidad": [30, 40, 50, 32]   # % de acierto
     },
     "Eduardo Z.": {
         "Ensayos": ["Ensayo 1", "Ensayo 2"],
         "Puntajes": [580, 610],
         "Buenas": [30, 35],
-        "Eje_Numeros": [60, 65],
-        "Eje_Algebra": [40, 45],
-        "Eje_Geometria": [30, 35],
-        "Eje_Probabilidad": [20, 30]
+        "Eje Numeros": [60, 65],
+        "Eje Algebra": [40, 45],
+        "Eje Geometria": [30, 35],
+        "Eje Probabilidad": [20, 30]
     }
+    
 }
 
 # --- 2. BARRA LATERAL (Navegación) ---

@@ -9,16 +9,16 @@ st.set_page_config(page_title="Mi Progreso PAES", layout="wide", page_icon="📈
 # Instrucción para alumnos: Para agregar un amigo, copia un bloque entero y cambia los datos.
 # Asegúrate de que todas las listas dentro de un nombre tengan el mismo largo.
 DATABASE = {
-    "Tu_Nombre": {
-        "Ensayos": ["Ensayo 1", "Ensayo 2", "Ensayo 3"],
-        "Puntajes": [650, 680, 710],
-        "Buenas": [40, 45, 50],
-        "Eje_Numeros": [70, 75, 80],       # % de acierto
-        "Eje_Algebra": [50, 55, 65],       # % de acierto
-        "Eje_Geometria": [40, 42, 48],     # % de acierto
-        "Eje_Probabilidad": [30, 40, 50]   # % de acierto
+    "Joel": {
+        "Ensayos": ["Ensayo 1", "Ensayo 2", "Ensayo 3","Ensayo 4"],
+        "Puntajes": [650, 680, 710,890],
+        "Buenas": [40, 45, 50,65],
+        "Eje_Numeros": [70, 75, 80, 90],       # % de acierto
+        "Eje_Algebra": [50, 55, 65,20],       # % de acierto
+        "Eje_Geometria": [40, 42, 48, 65],     # % de acierto
+        "Eje_Probabilidad": [30, 40, 50, 32]   # % de acierto
     },
-    "Amigo_1": {
+    "Eduardo Z.": {
         "Ensayos": ["Ensayo 1", "Ensayo 2"],
         "Puntajes": [580, 610],
         "Buenas": [30, 35],

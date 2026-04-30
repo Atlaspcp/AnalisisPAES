@@ -96,7 +96,7 @@ with col3:
 
 with col4:
     # Muestra la diferencia entre tu mejor y peor ensayo
-    st.metric("Rango de Mejora", f"{brecha} pts", help="Diferencia entre tu puntaje más alto y el más bajo")
+    st.metric("Rango de puntajes", f"{brecha} pts", help="Diferencia entre tu puntaje más alto y el más bajo")
 
 st.divider()
 

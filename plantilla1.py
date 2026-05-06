@@ -105,7 +105,7 @@ with tab2:
         st.warning("No hay datos de respuestas buenas para esta asignatura.")
 
 with tab3:
-    columnas_ejes = [c for c in df.columns if c.startswith("Eje_")]
+    columnas_ejes = [c for c in df.columns if "Eje" in c]
     if columnas_ejes:
         fig_ejes = px.line(df, x="Ensayos", y=columnas_ejes, markers=True,
                           title="Rendimiento por Ejes (%)")

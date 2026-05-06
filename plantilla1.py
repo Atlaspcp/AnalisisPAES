@@ -2,53 +2,56 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# --- CONFIGURACIÓN ---
-st.set_page_config(page_title="Portal PAES Global", layout="wide")
+# Nombre que aparecerá en el navegador, el titulo se puede cambiar
+st.set_page_config(page_title="Analisis resultados PAES", layout="wide")
 
-# 1. DATOS ACTUALIZADOS (Se agregó la clave "Buenas")
+# Base de datos, nombre de una persona, asociada a una prueba, cada prueba asociada a ciertos criterios.
+#Cuidado con los parentesis de llaves, todo debe mantenerse dentro de ellos para no desconfigurar las "listas", en estricto rigor son diccionarios
 DATABASE = {
     "Joel": {
-        "M1 (Matemática)": {
+        "M1": {
             "Ensayos": ["Marzo", "Abril"],
             "Puntajes": [720, 750],
-            "Buenas": [45, 48],  # <-- Nueva línea
-            "Eje_Números": [80, 85],
-            "Eje_Álgebra": [60, 70]
+            "Buenas": [45, 48],
+            "Eje Números": [80, 85],
+            "Eje Álgebra": [60, 70],
+            "Eje Geomtría": [65, 79],
+            "Eje Probabilidades": [20, 90]
         },
         "Lenguaje": {
             "Ensayos": ["Marzo", "Abril"],
             "Puntajes": [600, 640],
-            "Buenas": [38, 42],  # <-- Nueva línea
+            "Buenas": [38, 42], 
             "Eje_Rastreo": [50, 60],
             "Eje_Interpretación": [40, 55]
         }
     },
     "Kantar": {
-        "M1 (Matemática)": {
+        "M1": {
             "Ensayos": ["Abril"],
             "Puntajes": [810],
             "Buenas": [52],
-            "Eje_Números": [90],
-            "Eje_Álgebra": [85]
+            "Eje Números": [90],
+            "Eje Álgebra": [85]
         },
         "Historia": {
             "Ensayos": ["Febrero","Marzo","Abril"],
             "Puntajes": [810, 700, 900],
             "Buenas": [55, 48, 62],
-            "Eje_Números": [90, 60, 86],
-            "Eje_Álgebra": [85, 70, 83]
+            "Eje Números": [90, 60, 86],
+            "Eje Álgebra": [85, 70, 83]
         },
         "Lenguaje": {
             "Ensayos": ["Abril"],
             "Puntajes": [810],
             "Buenas": [50],
-            "Eje_Números": [90],
-            "Eje_Álgebra": [85]
+            "Eje Números": [90],
+            "Eje Álgebra": [85]
         }
     }
 }
 
-# --- 2. BARRA LATERAL ---
+# Configuración de barra lateral izquierda, pide un nombre, dependiendo del usuario, se vén las pruebas que tiene agregadas en la base de datos. Acá no se debe mover nada.
 st.sidebar.header("Acceso Personal")
 usuario_sel = st.sidebar.selectbox("Seleccionar un usuario", list(DATABASE.keys()))
 asignaturas_disponibles = list(DATABASE[usuario_sel].keys())
@@ -57,17 +60,16 @@ asignatura_sel = st.sidebar.selectbox("Selecciona la Prueba", asignaturas_dispon
 st.sidebar.divider()
 st.sidebar.success(f"Perfil: {usuario_sel}")
 
-# --- 3. PROCESAMIENTO ---
+#Muestra la información del ususario y la prueba seleccionada
 data_final = DATABASE[usuario_sel][asignatura_sel]
 df = pd.DataFrame(data_final)
 
-# --- 4. INTERFAZ PRINCIPAL ---
-st.title(f"Evolución PAES: {asignatura_sel}")
+#Vista principal, el titulo se puede cambiar
+st.title(f"Analisis PAES: {asignatura_sel}")
 st.subheader(f"Usuario: {usuario_sel}")
 
-# Cálculos
+# Calculos matematicos, cantidad de buenas, ultimos puntajes, promedio y cantidad de ensayos. Primero se comprueba que
 ultimo_p = df['Puntajes'].iloc[-1]
-# Verificamos si existen respuestas buenas en la data
 tiene_buenas = "Buenas" in df.columns
 ultima_b = df['Buenas'].iloc[-1] if tiene_buenas else "N/A"
 
@@ -83,7 +85,7 @@ with col4:
 
 st.divider()
 
-# --- 5. GRÁFICOS DINÁMICOS ---
+# Acá se configuran los parametros de los gráficos, los nombres son modificables.
 tab1, tab2, tab3 = st.tabs(["Progreso de Puntaje", "Análisis de Buenas", "Desempeño por Ejes"])
 
 with tab1:
@@ -94,7 +96,6 @@ with tab1:
 
 with tab2:
     if tiene_buenas:
-        # Gráfico de barras para respuestas correctas
         fig_buenas = px.bar(df, x="Ensayos", y="Buenas", 
                             title="Cantidad de Respuestas Correctas por Ensayo",
                             text_auto=True,
@@ -113,6 +114,6 @@ with tab3:
     else:
         st.warning("No hay datos de ejes temáticos.")
 
-# --- 6. TABLA DE DATOS ---
+# Muestra una tabla similar a excel con la información resumida que ha sido ingresada.
 with st.expander("Ver detalles de la planilla"):
     st.table(df)
